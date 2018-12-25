@@ -3,12 +3,12 @@ import React, { Component } from 'react';
 class Message extends Component {
 
     render() {
-        const { content, time, picture, src, sender, user } = this.props;
+        const { content, time, hasImage, src, sender, user } = this.props;
         let localString = (new Date(time * 1000)).toLocaleString();
         // let localTime = (new Date(time * 1000)).toLocaleTimeString();
         return (
             <div>
-                {picture &&
+                {hasImage &&
                     <div id="photo-area">
                         <img src={src} width="200" alt="Message"></img>
                     </div>}

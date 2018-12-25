@@ -10,21 +10,6 @@ import { Row, Col } from 'reactstrap';
 
 // Initialize Cloud Firestore through Firebase
 
-
-
-let chatList = [{
-	reciever: "sonic the hedgehog",
-	profilePicture: "https://i.kym-cdn.com/entries/icons/original/000/027/475/Screen_Shot_2018-10-25_at_11.02.15_AM.png",
-	lastMessage: "*notices bulge* owo .... whats this? ",
-	time: "4200000"
-},
-{
-	reciever: "sonic the hedgehog",
-	profilePicture: "https://i.kym-cdn.com/entries/icons/original/000/027/475/Screen_Shot_2018-10-25_at_11.02.15_AM.png",
-	lastMessage: "*notices bulge* owo .... whats this? ",
-	time: "4200000"
-}];
-
 export default class App extends Component {
 
 	constructor() {
@@ -32,7 +17,7 @@ export default class App extends Component {
 		this.state = {
 			user: null,
 			signUp: false,
-			chats: chatList
+			chats: []
 		}
 	}
 
@@ -65,7 +50,7 @@ export default class App extends Component {
 	}
 
 	componentDidMount() {
-		var db = firebase.firestore();
+		let db = firebase.firestore();
 		// // Disable deprecated features
 		db.settings({
 			timestampsInSnapshots: true
@@ -82,9 +67,10 @@ export default class App extends Component {
 				});
 			}
 		});
-
+		// edit this later 
 		let user = "KQw0dyz2ZsjzGAhF8BKM";
 
+		let conversations = []
 		db.collection("conversations").where("users", "array-contains", user).get().then((querySnapshot) => {
 			querySnapshot.forEach((doc) => {
 				let chat = {
@@ -92,12 +78,13 @@ export default class App extends Component {
 					profilePicture: doc.data().image,
 					lastMessage: "hey nerd",
 					time: "201230120"
-				};
-
-				let newChats = this.state.chats.concat(chat);
-				this.setState({ chats: newChats });
-				console.log(this.state.chats);
+				}; //TODO: fetch the most recent message from this conversation
+				conversations.push(chat);
+				// let newChats = this.state.chats.concat(chat);
+				// this.setState({ chats: newChats });
+				// console.log(this.state.chats);
 			});
+			this.setState({ chats: conversations});
 		});
 	}
 
