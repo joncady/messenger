@@ -1,21 +1,13 @@
 import React, { Component } from 'react';
-import Structure from './Structure';
+import UserSignUp from './components/UserSignUp';
+import UserSignIn from "./components/UserSignIn";
+import firebase from 'firebase/app';
+import 'firebase/auth';
 import ChatsList from './components/ChatsList.js';
 
 const firebase = require("firebase");
 // Required for side-effects
 require("firebase/firestore");
-
-// API KEY 
-var config = {
-    apiKey: "AIzaSyDgp5nbxCzaKf9FPyLuwyuzewVbwmV83t8",
-    authDomain: "messenger-f94f2.firebaseapp.com",
-    databaseURL: "https://messenger-f94f2.firebaseio.com",
-    projectId: "messenger-f94f2",
-    storageBucket: "messenger-f94f2.appspot.com",
-    messagingSenderId: "292856931571"
-  };
-  firebase.initializeApp(config);
 
 // Initialize Cloud Firestore through Firebase
 var db = firebase.firestore();
@@ -40,14 +32,22 @@ let chatList = [{
 
 class App extends Component {
 
-	constructor(props) {
-		super(props);
+	constructor() {
+		super();
 		this.state = {
+			user: null,
+			signUp: false,
 			chats: chatList
-		};
-		//this.setState({chats: chatList});
-		// reciever, profilePicture, lastMessage, time
+		}
+	}
 
+	componentWillUnmount() {
+		this.authUnregFunc();
+	}
+
+	logOut() {
+		firebase.auth().signOut();
+	}
 
 		// add temp data to
 		// var ref = db.collection("conversations");
@@ -58,7 +58,6 @@ class App extends Component {
 		// ref.doc().set({
 		// 	image: "hello.jpg",
 		// 	users: ["TMimSglHAAc9POJMVjTX", "fakeuser222"] });
-	}
 
 	getRecipients(list, user) {
 		let res = "";
@@ -73,19 +72,38 @@ class App extends Component {
 	render() {
 		return (
 			<div className="App">
-				<ChatsList chats={this.state.chats}></ChatsList>
+				{this.state.user ?
+					<div>
+						<h1>{this.state.user.displayName}</h1>
+						<button onClick={this.logOut}>Log Out</button>
+						<ChatsList chats={this.state.chats}></ChatsList>
+					</div> :
+					<div>
+						<UserSignUp></UserSignUp>
+						<UserSignIn></UserSignIn>
+					</div>
+				}
 			</div>
 		);
 	}
 
 	componentDidMount() {
+	    this.authUnregFunc = firebase.auth().onAuthStateChanged((firebaseUser) => {
+			if (firebaseUser) {
+				this.setState({
+					user: firebaseUser
+				})
+			} else {
+				this.setState({
+					user: null
+				});
+			}
+		});
+		
 		let user = "KQw0dyz2ZsjzGAhF8BKM";
 
 		db.collection("conversations").where("users", "array-contains", user).get().then((querySnapshot) => {
 			querySnapshot.forEach((doc) => {
-				//console.log(`${doc.id} => ${doc.data()}`);
-				//console.log(doc.data()[0].id);
-				//console.log(doc.data());
 				let chat = {
 					reciever: this.getRecipients(doc.data().users, user),
 					profilePicture: doc.data().image,

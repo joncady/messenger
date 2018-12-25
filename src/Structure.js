@@ -8,7 +8,6 @@ class Structure extends Component {
         );
     }
 
-
 }
 
 export default Structure;
