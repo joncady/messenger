@@ -38,7 +38,7 @@ export default class SendMessage extends Component {
         return (
             <div>
                 <input onChange={(event) => this.updateValue("content", event.target.value)} value = {this.state.content}></input>
-                <button onClick={this.sendMessage}>"Send"</button>
+                <button onClick={this.sendMessage}>Send</button>
             </div>
         );
     }

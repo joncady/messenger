@@ -8,64 +8,53 @@ export default class MessageList extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            messages: null
+            messages: null,
+            oldConversationID: null
         };
     }
 
-    componentDidMount = () => {
+    componentDidMount() {
+        this.setState({
+            oldConversationID: this.props.conversationID
+        });
+        this.updateChats();
+    }
+
+    componentDidUpdate() {
+        if (this.state.oldConversationID !== this.props.conversationID) {
+            this.updateChats();
+        }
+    }
+
+    updateChats = () => {    
         let db = firebase.firestore();
         const auth = firebase.auth();
 
         const conversationID = this.props.conversationID;
-        // db.collection("messages").where("conversationID", "==", conversationID).get()
-        //     .then((querySnapshot) => {
-        // 	querySnapshot.forEach((doc) => {
-        //         // content, time, picture, src, sender, user
-        //         let data = doc.data();
-        //         console.log(data);
-        //         let sender = data.user === auth.currentUser.uid;
-        //         let message = {
-        //             content: data.content,
-        //             time: data.time.seconds,
-        //             hasImage: data.hasImage,
-        //             src: data.src,
-        //             sender: sender,
-        //             user: data.user
-        //         }
-        //         console.log(message);
-        //         messages.push(message);
-        // 		// let newChats = this.state.chats.concat(chat);
-        // 		// this.setState({ chats: newChats });
-        // 		// console.log(this.state.chats);
-        //     });
-        //     this.setState({messages: messages});
-        // });
-
-        var messages = [];
-        console.log(conversationID);
-        db.collection("messages").where("conversationID", "==", conversationID)
+        db.collection("messages").where("conversationID", "==", conversationID).orderBy("time")
             .onSnapshot((querySnapshot) => {
+                var messages = [];
                 querySnapshot.forEach(function (doc) {
-                    //messages.push(doc.data());
-                    let data = doc.data();
-                    console.log(data);
-                    let sender = data.user === auth.currentUser.uid;
-                    let message = {
-                        content: data.content,
-                        time: data.time.seconds,
-                        hasImage: data.hasImage,
-                        src: data.src,
-                        sender: sender,
-                        user: data.user
+                    if (!doc.metadata.hasPendingWrites) {
+                        let data = doc.data();
+                        console.log(data);
+                        let sender = data.user === auth.currentUser.uid;
+                        let message = {
+                            content: data.content,
+                            time: data.time.seconds,
+                            hasImage: data.hasImage,
+                            src: data.src,
+                            sender: sender,
+                            user: data.user
+                        }
+                        console.log(message);
+                        messages.push(message);
                     }
-                    console.log(message);
-                    messages.push(message);
+                    console.log(messages);
+                    //this.updateValue("messages", messages);
                 });
-                console.log(messages);
-                this.setState({ messages: messages });
-                //this.updateValue("messages", messages);
+                this.setState({ messages: messages, oldConversationID: conversationID });
             });
-
     }
 
     updateValue = (name, value) => {

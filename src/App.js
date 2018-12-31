@@ -70,7 +70,6 @@ export default class App extends Component {
 		});
 		// edit this later 
 		let user = "KQw0dyz2ZsjzGAhF8BKM";
-
 		let conversations = []
 		db.collection("conversations").where("users", "array-contains", user).get().then((querySnapshot) => {
 			querySnapshot.forEach((doc) => {
