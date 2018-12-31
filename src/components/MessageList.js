@@ -41,25 +41,27 @@ export default class MessageList extends Component {
         //     this.setState({messages: messages});
         // });
     
-        var messages = [];
+        //var messages = [];
 
-        db.collection("messages").where("conversationID", "==", conversationID)
+        db.collection("messages").where("conversationID", "==", conversationID).orderBy("time")
         .onSnapshot((querySnapshot) => {
+            var messages = [];
             querySnapshot.forEach(function(doc) {
-                //messages.push(doc.data());
-                let data = doc.data();
-                console.log(data);
-                let sender = data.user === auth.currentUser.uid;
-                let message = {
-                    content: data.content,
-                    time: data.time.seconds,
-                    hasImage: data.hasImage,
-                    src: data.src,
-                    sender: sender,
-                    user: data.user
+                if(!doc.metadata.hasPendingWrites) {
+                    let data = doc.data();
+                    console.log(data);
+                    let sender = data.user === auth.currentUser.uid;
+                    let message = {
+                        content: data.content,
+                        time: data.time.seconds,
+                        hasImage: data.hasImage,
+                        src: data.src,
+                        sender: sender,
+                        user: data.user
+                    }
+                    console.log(message);
+                    messages.push(message);
                 }
-                console.log(message);
-                messages.push(message);
             });
             console.log(messages);
             this.setState({messages: messages});
