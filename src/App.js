@@ -1,4 +1,4 @@
-import React, {  Component } from 'react';
+import React, { Component } from 'react';
 import UserSignUp from './components/UserSignUp';
 import UserSignIn from "./components/UserSignIn";
 import firebase from 'firebase/app';
@@ -7,6 +7,7 @@ import ChatsList from './components/ChatsList.js';
 import "firebase/firestore";
 import MessageArea from './components/MessageArea';
 import { Row, Col } from 'reactstrap';
+import StartChat from './components/StartChat';
 
 // Initialize Cloud Firestore through Firebase
 
@@ -17,6 +18,7 @@ export default class App extends Component {
 		this.state = {
 			user: null,
 			signUp: false,
+			loading: true,
 			chats: [],
 			conversationID: null
 		}
@@ -30,20 +32,11 @@ export default class App extends Component {
 		firebase.auth().signOut();
 	}
 
-	// add temp data to
-	// var ref = db.collection("conversations");
-
-	// ref.doc().set({
-	// 	image: "hi.jpg",
-	// 	users: ["KQw0dyz2ZsjzGAhF8BKM", "TMimSglHAAc9POJMVjTX"] });
-	// ref.doc().set({
-	// 	image: "hello.jpg",
-	// 	users: ["TMimSglHAAc9POJMVjTX", "fakeuser222"] });
-
 	getRecipients(list, user) {
 		let res = "";
 		for (let i = 0; i < list.length; i++) {
 			if (list[i] !== user) {
+				console.log(list[i])
 				res += list[i] + " ";
 			}
 		}
@@ -52,46 +45,39 @@ export default class App extends Component {
 
 	componentDidMount() {
 		let db = firebase.firestore();
-		// // Disable deprecated features
+		// Disable deprecated features
 		db.settings({
 			timestampsInSnapshots: true
 		});
 
 		this.authUnregFunc = firebase.auth().onAuthStateChanged((firebaseUser) => {
 			if (firebaseUser) {
-				this.setState({
-					user: firebaseUser
-				})
+				let user = firebaseUser.uid
+				let conversations = [];
+				// TODO: update to realtime snapshots from database
+				db.collection("conversations").where("users", "array-contains", user).get().then((querySnapshot) => {
+					querySnapshot.forEach((doc) => {
+						let chat = {
+							reciever: this.getRecipients(doc.data().users, user),
+							profilePicture: doc.data().image,
+							lastMessage: "hey nerd",
+							time: "201230120",
+							id: doc.id
+						}; 
+						conversations.push(chat);
+					});
+					this.setState({ chats: conversations, user: firebaseUser, loading: false });
+				});
 			} else {
 				this.setState({
-					user: null
+					user: null,
+					loading: false
 				});
 			}
-		});
-		// edit this later 
-		let user = "KQw0dyz2ZsjzGAhF8BKM";
-		let conversations = [];
-		db.collection("conversations").where("users", "array-contains", user).get().then((querySnapshot) => {
-			querySnapshot.forEach((doc) => {
-				let chat = {
-					reciever: this.getRecipients(doc.data().users, user),
-					profilePicture: doc.data().image,
-					lastMessage: "hey nerd",
-					time: "201230120",
-					id: doc.id
-				}; //TODO: fetch the most recent message from this conversation
-				conversations.push(chat);
-
-				// let newChats = this.state.chats.concat(chat);
-				// this.setState({ chats: newChats });
-				// console.log(this.state.chats);
-			});
-			this.setState({ chats: conversations});
 		});
 	}
 
 	changeConversation = (convoID) => {
-		console.log(convoID);
 		this.setState({
 			conversationID: convoID
 		});
@@ -100,23 +86,29 @@ export default class App extends Component {
 	render() {
 		return (
 			<div className="App">
-				{this.state.user ?
-					<div>
-						<h1>{this.state.user.displayName}</h1>
-						<button onClick={this.logOut}>Log Out</button>
-						<Row>
-							<Col>
-								<ChatsList chats={this.state.chats} changeConvo={this.changeConversation}></ChatsList>
-							</Col>
-							<Col>
-								<MessageArea conversationID={this.state.conversationID}></MessageArea>
-							</Col>
-						</Row>
-					</div> :
-					<div>
-						<UserSignUp></UserSignUp>
-						<UserSignIn></UserSignIn>
+				{this.state.loading ?
+					<div style={{ textAlign: "center", padding: "4rem"}}>
+						<img alt="loading symbol" src={require("./assets/loader.gif")}></img>
 					</div>
+					:
+					this.state.user ?
+						<div>
+							<h1>{this.state.user.displayName}</h1>
+							<button onClick={this.logOut}>Log Out</button>
+							<Row>
+								<Col>
+									<StartChat></StartChat>
+									<ChatsList chats={this.state.chats} changeConvo={this.changeConversation}></ChatsList>
+								</Col>
+								<Col>
+									<MessageArea conversationID={this.state.conversationID}></MessageArea>
+								</Col>
+							</Row>
+						</div> :
+						<div>
+							<UserSignUp></UserSignUp>
+							<UserSignIn></UserSignIn>
+						</div>
 				}
 			</div>
 		);

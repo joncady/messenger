@@ -53,7 +53,7 @@ class SingleChat extends Component {
                     console.log(content + " " + time);
                     this.setState({
                         content: content,
-                        time: (new Date(time * 1000)).toLocaleString()
+                        time: (new Date(time * 1000)).toLocaleTimeString()
                     });
                 }
             });

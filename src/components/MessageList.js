@@ -51,7 +51,6 @@ export default class MessageList extends Component {
                         messages.push(message);
                     }
                     console.log(messages);
-                    //this.updateValue("messages", messages);
                 });
                 this.setState({ messages: messages, oldConversationID: conversationID });
             });

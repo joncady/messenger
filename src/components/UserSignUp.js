@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Form, FormGroup, Label, Input, Button, Alert, Container } from 'reactstrap';
 import firebase from 'firebase/app';
 import 'firebase/auth';
-import 'firebase/database';
+import 'firebase/firestore';
 
 class UserSignUp extends Component {
 
@@ -12,29 +12,40 @@ class UserSignUp extends Component {
             email: '',
             password: '',
             displayName: '',
+            name: '',
             errorMessage: null
         }
     }
 
     signUp = (event) => {
         event.preventDefault();
-        firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
-            .then((firebaseUser) => {
-                let id = firebaseUser.user.uid;
-                let data = {
-                    region: "", city: '', bio: "", displayName: this.state.displayName, twitter: '', discord: '', main: '', secondary: '',
-                    friendCode: '', photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/1/1e/Default-avatar.jpg'
-                }
-                let userRef = firebase.database().ref("userData").child(`${id}`);
-                userRef.set({ data: data })
-                firebase.auth().currentUser.updateProfile({
-                    displayName: this.state.displayName,
-                    photoURL: 'https://upload.wikimedia.org/wikipedia/commons/1/1e/Default-avatar.jpg'
-                }).then(() => {
-                    firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password);
-                    window.location.hash = "#/profile";
-                });
-            }).catch((err) => this.setState({ errorMessage: err.message }));
+        if (this.state.displayName.length > 5) {
+            let db = firebase.firestore();
+            db.collection("users").where("username", "==", this.state.displayName)
+                .get().then((querySnapshot) => {
+                    if (querySnapshot.empty) {
+                        firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
+                            .then((firebaseUser) => {
+                                firebase.auth().currentUser.updateProfile({
+                                    displayName: this.state.displayName,
+                                    photoURL: 'https://upload.wikimedia.org/wikipedia/commons/1/1e/Default-avatar.jpg'
+                                }).then(() => {
+                                    db.collection("users").doc(firebase.auth().currentUser.uid).set({
+                                        name: this.state.name,
+                                        username: this.state.displayName,
+                                        profilePic: "..."
+                                    });
+                                    firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password);
+                                });
+                            }).catch((err) => this.setState({ errorMessage: err.message }));
+                    } else {
+                        this.setState({
+                            errorMessage: "This username already exists!"
+                        })
+                    }
+                })
+        }
+
     }
 
     updateValue = (name, value) => {
@@ -51,8 +62,12 @@ class UserSignUp extends Component {
                     </div>
                     <Form style={{ width: "50%", marginLeft: 'auto', marginRight: 'auto' }}>
                         <FormGroup>
-                            <Label for="displayName">Tag</Label>
-                            <Input type="displayName" name="displayName" value={this.state.displayName} onChange={(event) => this.updateValue("displayName", event.target.value)} id="display-name" placeholder="Your Tag" />
+                            <Label for="displayName">Name</Label>
+                            <Input type="displayName" name="displayName" value={this.state.name} onChange={(event) => this.updateValue("name", event.target.value)} id="name" placeholder="Your Name" />
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="displayName">Username</Label>
+                            <Input type="displayName" name="displayName" value={this.state.displayName} onChange={(event) => this.updateValue("displayName", event.target.value)} id="display-name" placeholder="Your Username" />
                         </FormGroup>
                         <FormGroup>
                             <Label for="email">Email</Label>

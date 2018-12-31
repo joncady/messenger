@@ -5,7 +5,6 @@ class Message extends Component {
     render() {
         const { content, time, hasImage, src, sender, user } = this.props;
         let localString = (new Date(time * 1000)).toLocaleString();
-        // let localTime = (new Date(time * 1000)).toLocaleTimeString();
         return (
             <div>
                 {hasImage &&
