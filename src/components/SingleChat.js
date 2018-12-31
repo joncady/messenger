@@ -1,40 +1,25 @@
 import React, { Component } from 'react';
 import "firebase/firestore";
 import firebase from 'firebase/app';
+import { ListGroupItem } from 'reactstrap';
 
 /**
  * 
  */
 
-class SingleChat extends Component {
-    constructor() {
-        super();
+export default class SingleChat extends Component {
+    
+    constructor(props) {
+        super(props);
         this.state = {
             content: "",
             time: ""
         }
     }
 
-    render() {
-        const { reciever, profilePicture, lastMessage, time, id } = this.props;
-        return(
-            <div onClick={() => this.props.changeConvo(id)} style={{ display: 'flex'}}>
-                <img alt="Chat" src={profilePicture} style={{width: '50px', height: '50px', borderRadius: '50%'}}></img>
-                <div>
-                    <h6>{reciever}</h6>
-                    <p>{this.state.content}</p>
-                </div>
-
-                <div>
-                    <p>{this.state.time}</p>
-                </div>
-            </div>
-        );
-    }
-
     componentDidMount = () => {
 
-        let conversationID = this.props.id;
+        let conversationID = this.props.chat.id;
 
         let db = firebase.firestore();
 		// // Disable deprecated features
@@ -50,7 +35,6 @@ class SingleChat extends Component {
                 if(!response.metadata.hasPendingWrites) {
                     let content = response.data().content;
                     let time = response.data().time.seconds;
-                    console.log(content + " " + time);
                     this.setState({
                         content: content,
                         time: (new Date(time * 1000)).toLocaleTimeString()
@@ -60,7 +44,21 @@ class SingleChat extends Component {
         });
     }
 
+    render() {
+        const { receiver, profilePicture, id } = this.props.chat;
+        return(
+            <ListGroupItem onClick={() => this.props.changeConvo(id)} style={{ display: 'flex' }} className="clickable">
+                <img alt="Chat" src={profilePicture} style={{width: '50px', height: '50px', borderRadius: '50%'}}></img>
+                <div>
+                    <h6>{receiver}</h6>
+                    <p>{this.state.content}</p>
+                </div>
+
+                <div>
+                    <p>{this.state.time}</p>
+                </div>
+            </ListGroupItem>
+        );
+    }
 
 }
-
-export default SingleChat;

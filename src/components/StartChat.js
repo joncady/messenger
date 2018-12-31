@@ -50,8 +50,10 @@ export default class StartChat extends Component {
             <Form>
                 <FormGroup>
                     <Label for="user">Start a Chat!</Label>
-                    <Input value={this.state.user} onChange={(event) => this.updateValue("user", event.target.value)} type="user" name="user" id="user" placeholder="Enter your friend's user name!" />
-                    <Button onClick={this.add}>Add</Button>
+                    <div style={{ display: "flex" }}>
+                        <Input value={this.state.user} onChange={(event) => this.updateValue("user", event.target.value)} type="user" name="user" id="user" placeholder="Enter your friend's user name!" />
+                        <Button onClick={this.add}>Add</Button>
+                    </div>
                 </FormGroup>
             </Form>
         );

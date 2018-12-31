@@ -6,7 +6,7 @@ import 'firebase/auth';
 import ChatsList from './components/ChatsList.js';
 import "firebase/firestore";
 import MessageArea from './components/MessageArea';
-import { Row, Col } from 'reactstrap';
+import { Row, Col, Button } from 'reactstrap';
 import StartChat from './components/StartChat';
 
 // Initialize Cloud Firestore through Firebase
@@ -22,10 +22,6 @@ export default class App extends Component {
 			chats: [],
 			conversationID: null
 		}
-	}
-
-	componentWillUnmount() {
-		this.authUnregFunc();
 	}
 
 	logOut() {
@@ -58,12 +54,12 @@ export default class App extends Component {
 				db.collection("conversations").where("users", "array-contains", user).get().then((querySnapshot) => {
 					querySnapshot.forEach((doc) => {
 						let chat = {
-							reciever: this.getRecipients(doc.data().users, user),
+							receiver: this.getRecipients(doc.data().users, user),
 							profilePicture: doc.data().image,
 							lastMessage: "hey nerd",
 							time: "201230120",
 							id: doc.id
-						}; 
+						};
 						conversations.push(chat);
 					});
 					this.setState({ chats: conversations, user: firebaseUser, loading: false });
@@ -77,6 +73,10 @@ export default class App extends Component {
 		});
 	}
 
+	componentWillUnmount() {
+		this.authUnregFunc();
+	}
+
 	changeConversation = (convoID) => {
 		this.setState({
 			conversationID: convoID
@@ -87,16 +87,20 @@ export default class App extends Component {
 		return (
 			<div className="App">
 				{this.state.loading ?
-					<div style={{ textAlign: "center", padding: "4rem"}}>
+					<div style={{ textAlign: "center", padding: "4rem" }}>
 						<img alt="loading symbol" src={require("./assets/loader.gif")}></img>
 					</div>
 					:
 					this.state.user ?
 						<div>
-							<h1>{this.state.user.displayName}</h1>
-							<button onClick={this.logOut}>Log Out</button>
 							<Row>
-								<Col>
+								<Col xs="4">
+									<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+										<h1>{this.state.user.displayName}</h1>
+										<div>
+											<Button onClick={this.logOut}>Log Out</Button>
+										</div>
+									</div>
 									<StartChat></StartChat>
 									<ChatsList chats={this.state.chats} changeConvo={this.changeConversation}></ChatsList>
 								</Col>

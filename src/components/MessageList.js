@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import Message from './Message';
+import SingleMessage from './SingleMessage';
 import 'firebase/firestore';
 import 'firebase/auth';
 import firebase from 'firebase/app';
 
 export default class MessageList extends Component {
+    
     constructor(props) {
         super(props);
         this.state = {
@@ -37,7 +38,6 @@ export default class MessageList extends Component {
                 querySnapshot.forEach(function (doc) {
                     if (!doc.metadata.hasPendingWrites) {
                         let data = doc.data();
-                        console.log(data);
                         let sender = data.user === auth.currentUser.uid;
                         let message = {
                             content: data.content,
@@ -47,10 +47,8 @@ export default class MessageList extends Component {
                             sender: sender,
                             user: data.user
                         }
-                        console.log(message);
                         messages.push(message);
                     }
-                    console.log(messages);
                 });
                 this.setState({ messages: messages, oldConversationID: conversationID });
             });
@@ -65,13 +63,14 @@ export default class MessageList extends Component {
     render() {
         const messages = this.state.messages;
         return (
-            <div id="message-area">
+            <div id="message-list">
                 {messages &&
                     messages.map((message, index) => {
-                        return <Message key={"message" + index} content={message.content} time={message.time} hasImage={message.hasImage} src={message.src} sender={message.sender} user={message.user}></Message>
+                        return <SingleMessage key={"message" + index} content={message.content} time={message.time} hasImage={message.hasImage} src={message.src} sender={message.sender} user={message.user}></SingleMessage>
                     })
                 }
             </div>
         )
     }
+
 }

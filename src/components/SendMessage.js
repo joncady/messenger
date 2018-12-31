@@ -1,23 +1,29 @@
 import React, { Component } from 'react';
+import { Button, Input } from 'reactstrap';
 import 'firebase/auth';
 import firebase from 'firebase/app';
-import 'firebase/database';
 import 'firebase/firestore';
 
 export default class SendMessage extends Component {
+
     constructor(props) {
         super(props);
         this.state = {
             content: ""
         }
     }
+
+    componentDidMount = () => {
+        this.db = firebase.firestore();
+    }
+
     updateValue = (name, value) => {
         this.setState({
             [name]: value
         })
     }
 
-    sendMessage = () =>  {
+    sendMessage = () => {
         const auth = firebase.auth();
         //let time = Date.now();
         // content, time, picture, src, sender, user
@@ -30,20 +36,19 @@ export default class SendMessage extends Component {
             conversationID: this.props.conversationID
         };
         this.db.collection("messages").doc().set(message)
-            .then(() => {this.updateValue("content", "")});
+            .then(() => { this.updateValue("content", "") });
 
     }
 
     render() {
         return (
-            <div>
-                <input onChange={(event) => this.updateValue("content", event.target.value)} value = {this.state.content}></input>
-                <button onClick={this.sendMessage}>Send</button>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <Input onChange={(event) => this.updateValue("content", event.target.value)} value={this.state.content} placeholder="Type your message here..."></Input>
+                <div>
+                    <Button onClick={this.sendMessage}>Send</Button>
+                </div>
             </div>
         );
     }
 
-    componentDidMount = () => {
-        this.db = firebase.firestore();
-    }
 }
