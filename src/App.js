@@ -70,7 +70,7 @@ export default class App extends Component {
 		});
 		// edit this later 
 		let user = "KQw0dyz2ZsjzGAhF8BKM";
-		let conversations = []
+		let conversations = [];
 		db.collection("conversations").where("users", "array-contains", user).get().then((querySnapshot) => {
 			querySnapshot.forEach((doc) => {
 				let chat = {
@@ -81,6 +81,7 @@ export default class App extends Component {
 					id: doc.id
 				}; //TODO: fetch the most recent message from this conversation
 				conversations.push(chat);
+
 				// let newChats = this.state.chats.concat(chat);
 				// this.setState({ chats: newChats });
 				// console.log(this.state.chats);
