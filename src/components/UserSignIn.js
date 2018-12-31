@@ -24,7 +24,7 @@ export class UserSignIn extends Component {
         event.preventDefault();
         firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
             .then((firebaseUser) => {
-                window.location.hash = "#/home"
+                console.log("signed in!");
             }).catch((err) => this.setState({ errorMessage: err.message }));
     }
 

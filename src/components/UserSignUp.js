@@ -67,7 +67,7 @@ class UserSignUp extends Component {
                         </FormGroup>
                         <FormGroup>
                             <Label for="displayName">Username</Label>
-                            <Input type="displayName" name="displayName" value={this.state.displayName} onChange={(event) => this.updateValue("displayName", event.target.value)} id="display-name" placeholder="Your Tag" />
+                            <Input type="displayName" name="displayName" value={this.state.displayName} onChange={(event) => this.updateValue("displayName", event.target.value)} id="display-name" placeholder="Your Username" />
                         </FormGroup>
                         <FormGroup>
                             <Label for="email">Email</Label>
