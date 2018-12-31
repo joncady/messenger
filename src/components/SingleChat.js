@@ -11,8 +11,7 @@ class Structure extends Component {
 
         return(
             <div style={{ display: 'flex'}}>
-                <img src={profilePicture} style={{width: '50px', height: '50px', borderRadius: '50%'}}></img>
-                
+                <img alt="Chat" src={profilePicture} style={{width: '50px', height: '50px', borderRadius: '50%'}}></img>
                 <div>
                     <h6>{reciever}</h6>
                     <p>{lastMessage}</p>

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {  Component } from 'react';
 import UserSignUp from './components/UserSignUp';
 import UserSignIn from "./components/UserSignIn";
 import firebase from 'firebase/app';
