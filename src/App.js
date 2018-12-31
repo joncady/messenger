@@ -17,7 +17,8 @@ export default class App extends Component {
 		this.state = {
 			user: null,
 			signUp: false,
-			chats: []
+			chats: [],
+			conversationID: null
 		}
 	}
 
@@ -77,7 +78,8 @@ export default class App extends Component {
 					reciever: this.getRecipients(doc.data().users, user),
 					profilePicture: doc.data().image,
 					lastMessage: "hey nerd",
-					time: "201230120"
+					time: "201230120",
+					id: doc.id
 				}; //TODO: fetch the most recent message from this conversation
 				conversations.push(chat);
 				// let newChats = this.state.chats.concat(chat);
@@ -85,6 +87,13 @@ export default class App extends Component {
 				// console.log(this.state.chats);
 			});
 			this.setState({ chats: conversations});
+		});
+	}
+
+	changeConversation = (convoID) => {
+		console.log(convoID);
+		this.setState({
+			conversationID: convoID
 		});
 	}
 
@@ -97,10 +106,10 @@ export default class App extends Component {
 						<button onClick={this.logOut}>Log Out</button>
 						<Row>
 							<Col>
-								<ChatsList chats={this.state.chats}></ChatsList>
+								<ChatsList chats={this.state.chats} changeConvo={this.changeConversation}></ChatsList>
 							</Col>
 							<Col>
-								<MessageArea></MessageArea>
+								<MessageArea conversationID={this.state.conversationID}></MessageArea>
 							</Col>
 						</Row>
 					</div> :

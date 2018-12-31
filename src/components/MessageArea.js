@@ -5,12 +5,15 @@ import MessageList from './MessageList';
 export default class MessageArea extends Component {
 
     render() {
-        //const messages = this.props.messages;
+        const conversationID = this.props.conversationID;
         return (
+            conversationID ? 
             <section>
-                <MessageList conversationID={"Qk3ucCeCYffduB6QFhxJ"}></MessageList>
-                <SendMessage></SendMessage>
+                <MessageList conversationID={this.props.conversationID}></MessageList>
+                <SendMessage conversationID={this.props.conversationID}></SendMessage>
             </section>
+            :
+            <div>No conversation!</div>
         )
     }
 

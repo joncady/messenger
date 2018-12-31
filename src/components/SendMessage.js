@@ -4,7 +4,7 @@ import firebase from 'firebase/app';
 import 'firebase/database';
 import 'firebase/firestore';
 
-export default class MessageArea extends Component {
+export default class SendMessage extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -27,7 +27,7 @@ export default class MessageArea extends Component {
             hasImage: false,
             src: "",
             user: auth.currentUser.uid,
-            conversationID: "Qk3ucCeCYffduB6QFhxJ"
+            conversationID: this.props.conversationID
         };
         this.db.collection("messages").doc().set(message)
             .then(() => {this.updateValue("content", "")});
