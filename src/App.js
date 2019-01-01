@@ -93,7 +93,7 @@ export default class App extends Component {
 					:
 					this.state.user ?
 						<div>
-							<Row>
+							<Row className="mx-0">
 								<Col xs="4">
 									<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
 										<h1>{this.state.user.displayName}</h1>

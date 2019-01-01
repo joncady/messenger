@@ -35,3 +35,13 @@
   height: 75%;
   overflow-y: auto;
 }
+
+#emoji-container {
+  position: relative;
+}
+
+#emoji-hover {
+  bottom: 20px;
+  right: 0;
+  position: absolute;
+}
