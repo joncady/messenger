@@ -51,10 +51,12 @@ export default class SendMessage extends Component {
         return (
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <Input onChange={(event) => this.updateValue("content", event.target.value)} value={this.state.content} placeholder="Type your message here..."></Input>
-                <Emoji emoji='smiley' set="google" size={32} onClick={() => this.setState({ showEmojis: !this.state.showEmojis })} />
+                <div className="clickable">
+                    <Emoji emoji='thinking_face' native={true} set="google" size={32} onClick={() => this.setState({ showEmojis: !this.state.showEmojis })} />
+                </div>
                 {this.state.showEmojis && <div id="emoji-container">
                     <div id="emoji-hover">
-                        <Picker set='google' onSelect={this.addEmoji} />
+                        <Picker title="" emoji="thinking_face" native={true} set='google' onSelect={this.addEmoji} />
                     </div>
                 </div>
                 }

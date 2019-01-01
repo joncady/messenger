@@ -27,6 +27,13 @@
   background-color: lightgray;
 }
 
+#chatlist-area {
+  height: 70vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: .5rem;
+}
+
 #message-area {
   height: 100vh;
 }

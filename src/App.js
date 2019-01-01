@@ -48,7 +48,7 @@ export default class App extends Component {
 
 		this.authUnregFunc = firebase.auth().onAuthStateChanged((firebaseUser) => {
 			if (firebaseUser) {
-				let user = firebaseUser.uid
+				let user = firebaseUser.uid;
 				let conversations = [];
 				// TODO: update to realtime snapshots from database
 				db.collection("conversations").where("users", "array-contains", user).onSnapshot({includeMetadataChanges: true}, (querySnapshot) => {

@@ -10,13 +10,15 @@ export default class ChatsList extends Component {
 
     render() {
         const chats = this.props.chats;
-        return(
-            <ListGroup>
-                {chats.map((chat, index) => {
-				    return <SingleChat key={"chat number " + index} chat={chat} changeConvo={this.props.changeConvo}></SingleChat>
-                }) 
-                }
-            </ListGroup>
+        return (
+            <div id="chatlist-area">
+                <ListGroup>
+                    {chats.map((chat, index) => {
+                        return <SingleChat key={"chat number " + index} chat={chat} changeConvo={this.props.changeConvo}></SingleChat>
+                    })
+                    }
+                </ListGroup>
+            </div>
         );
     }
 
