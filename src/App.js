@@ -51,19 +51,23 @@ export default class App extends Component {
 				let user = firebaseUser.uid
 				let conversations = [];
 				// TODO: update to realtime snapshots from database
-				db.collection("conversations").where("users", "array-contains", user).get().then((querySnapshot) => {
+				db.collection("conversations").where("users", "array-contains", user).onSnapshot({includeMetadataChanges: true}, (querySnapshot) => {
+					conversations = [];
 					querySnapshot.forEach((doc) => {
-						let chat = {
-							receiver: this.getRecipients(doc.data().users, user),
-							profilePicture: doc.data().image,
-							lastMessage: "hey nerd",
-							time: "201230120",
-							id: doc.id
-						};
-						conversations.push(chat);
+						if(!doc.metadata.hasPendingWrites) {
+							let chat = {
+								receiver: this.getRecipients(doc.data().users, user),
+								profilePicture: doc.data().image,
+								id: doc.id
+							};
+							conversations.push(chat);
+						}
+						this.setState({ chats: conversations});
 					});
-					this.setState({ chats: conversations, user: firebaseUser, loading: false });
+					console.log(conversations);
+					this.setState({user: firebaseUser, loading: false });
 				});
+				
 			} else {
 				this.setState({
 					user: null,
